@@ -64,7 +64,7 @@ public class Main {
     }
 
     /**
-     * Calcula IMC.
+     * Metodo para calcular el IMC.
      * @param peso Peso en kilogramos
      * @param altura Altura en metros
      * @return Indice de masa corporal
