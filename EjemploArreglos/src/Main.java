@@ -17,7 +17,7 @@ public class Main {
             System.out.print("Seleccione una opcion: ");
 
             while (!sc.hasNextInt()) {
-                System.out.println("Error: Ingrese un número válido.");
+                System.out.println("Error: Ingrese un numero válido.");
                 sc.next();
             }
             opcion = sc.nextInt();
