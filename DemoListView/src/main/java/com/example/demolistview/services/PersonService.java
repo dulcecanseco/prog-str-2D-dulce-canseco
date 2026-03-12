@@ -19,21 +19,23 @@ public class PersonService {
             String[] parts = line.split("," , -1);
             String name = parts[0].trim(); //obtiene el nombre del arreglo
             String correo = parts[1].trim(); //obtiene el correo del arreglo
+            String edad = parts[2].trim();
 
-            result.add(name+"-"+correo); //Se agrega a la lista de resultados con el formato deseado
+            result.add(name+"-"+correo+"-"+edad); //Se agrega a la lista de resultados con el formato deseado
         }
         return result;
 
     }
 
-    public void addPerson(String name, String email) throws IOException {
-        validatePerson(name,email);
+    public void addPerson(String name, String email, String edad) throws IOException {
+        validatePerson(name,email,edad);
         String nameNoComa= name.replace(",","");
         String emailNoComa= email.replace(",","");
-        repo.appendNewLine(nameNoComa+","+ emailNoComa);
+        String edadNoComa= edad.replace("","");
+        repo.appendNewLine(nameNoComa+","+ emailNoComa+","+ edadNoComa);
     }
 
-    private void validatePerson(String name, String email){
+    private void validatePerson(String name, String email, String edad){
 
         if(name.isBlank() || name.length()<3){
             throw new IllegalArgumentException("El nombre no cumple con los estandares");
@@ -41,6 +43,15 @@ public class PersonService {
         String em= (email==null) ? "" : email.trim();
         if(em.isBlank() || !em.contains("@") || !em.contains(".")){
             throw new IllegalArgumentException("El correo es incorrecto");
+        }
+        try {
+            int valorEdad = Integer.parseInt(edad.trim());
+
+            if (valorEdad < 18) {
+                throw new IllegalArgumentException("La persona debe ser mayor o igual a 18 años");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("La edad debe ser un dato numérico");
         }
     }
 
