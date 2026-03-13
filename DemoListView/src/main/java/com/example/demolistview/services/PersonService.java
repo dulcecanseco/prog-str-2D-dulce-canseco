@@ -35,6 +35,27 @@ public class PersonService {
         repo.appendNewLine(nameNoComa+","+ emailNoComa+","+ edadNoComa);
     }
 
+public void updatePerson(int index, String name, String email, String edad) throws IOException {
+    List<String> lines = getAllCleanLines();
+    if (index == -1) {
+        throw new IllegalArgumentException("El indice recibido es invalido");
+    }
+    lines.set(index, name + "," + email + "," + edad );
+    repo.appendAllLines(lines);
+}
+
+    private List<String> getAllCleanLines() throws IOException {
+        List<String> lines = repo.readAllLines();
+        List<String> cleanLines = new ArrayList<>();
+        for (String line : lines){
+            if(line!= null && !line.isBlank()){
+        cleanLines.add(line);
+            }
+        }
+        return cleanLines;
+    }
+
+
     private void validatePerson(String name, String email, String edad){
 
         if(name.isBlank() || name.length()<3){

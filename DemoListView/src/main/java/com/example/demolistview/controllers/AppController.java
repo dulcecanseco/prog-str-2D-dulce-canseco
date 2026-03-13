@@ -36,6 +36,10 @@ public class AppController {
         //Inicializar ListView
 
         loadFromFile();
+        listView.getSelectionModel().selectedItemProperty().addListener( (obs,oldvValue, newValue) -> {
+            loadDataToForm(newValue); //string con el valor de row 0 test-email@gmail.com-18
+        }
+    );
         listView.setItems(data);
     }
 
@@ -64,6 +68,30 @@ public class AppController {
 
     }
 
+    @FXML
+    public void onUpdate(){
+        int index = listView.getSelectionModel().getSelectedIndex();
+        String name = txtName.getText();
+        String email = txtEmail.getText();
+        String edad = txtEdad.getText();
+        try{
+            service.updatePerson(index,name,email,edad);
+            loadFromFile();
+            lblMsg.setText("persona actualizada con exito");
+            lblMsg.setStyle("-fx-text-fill: green");
+            txtName.clear();
+            txtEmail.clear();
+            txtEdad.clear();
+
+        }catch (IOException e){
+            lblMsg.setText("Hubo un error con el archivo");
+            lblMsg.setStyle("-fx-text-fill: red");
+        }catch (IllegalArgumentException ex){
+            lblMsg.setText("Hubo un error con los datos");
+            lblMsg.setStyle("-fx-text-fill: red");
+        }
+    }
+
     private void loadFromFile(){
         try{
             List<String> items = service.loadDataforList();
@@ -74,6 +102,16 @@ public class AppController {
             lblMsg.setText(e.getMessage());
             lblMsg.setStyle("-fx-text-fill: red");
         }
+
+    }
+
+    private void loadDataToForm(String item){
+
+        String [] parts = item.split("-");
+        txtName.setText(parts[0]);//Corresponde a la parte del nombre
+        txtEmail.setText(parts[1]);//Corresponde a la parte del email
+        txtEdad.setText(parts[2]);//Corresponde a la parte de la edad
+
 
     }
 
