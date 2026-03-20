@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class AppController {
 
@@ -25,32 +26,42 @@ public class AppController {
     private TextField txtEmail;
     @FXML
     private TextField txtEdad;
+    @FXML
+    private TextField txtBusqueda;
 
     @FXML
     private final ObservableList<String> data = FXCollections.observableArrayList();
 
-    private PersonService service= new PersonService();
+    private PersonService service = new PersonService();
 
     @FXML
-    public void initialize(){ //se va a ejecutar el inicio, en cuanto se cargue el controller
+    public void initialize() { //se va a ejecutar el inicio, en cuanto se cargue el controller
         //Inicializar ListView
 
         loadFromFile();
-        listView.getSelectionModel().selectedItemProperty().addListener( (obs,oldvValue, newValue) -> {
-            loadDataToForm(newValue); //string con el valor de row 0 test-email@gmail.com-18
-        }
-    );
+        txtBusqueda.textProperty().addListener(
+                (obs, old, newValue) -> {
+                    filtroEmail(newValue);
+                    System.out.println("Datos:: "+ newValue);
+                }
+        );
+        
+
+        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldvValue, newValue) -> {
+                    loadDataToForm(newValue); //string con el valor de row 0 test-email@gmail.com-18
+                }
+        );
         listView.setItems(data);
     }
 
     @FXML
-    public void onAddPerson(){
-        try{
+    public void onAddPerson() {
+        try {
             String name = txtName.getText();
             String email = txtEmail.getText();
             String edad = txtEdad.getText();
 
-            service.addPerson(name,email,edad);
+            service.addPerson(name, email, edad);
             lblMsg.setText("persona agregada con exito");
             lblMsg.setStyle("-fx-text-fill: green");
             txtName.clear();
@@ -58,10 +69,10 @@ public class AppController {
             txtEdad.clear();
             loadFromFile();
 
-        }catch (IOException e){
+        } catch (IOException e) {
             lblMsg.setText("Hubo un error con el archivo");
             lblMsg.setStyle("-fx-text-fill: red");
-        }catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             lblMsg.setText("Hubo un error con los datos");
             lblMsg.setStyle("-fx-text-fill: red");
         }
@@ -69,13 +80,13 @@ public class AppController {
     }
 
     @FXML
-    public void onUpdate(){
+    public void onUpdate() {
         int index = listView.getSelectionModel().getSelectedIndex();
         String name = txtName.getText();
         String email = txtEmail.getText();
         String edad = txtEdad.getText();
-        try{
-            service.updatePerson(index,name,email,edad);
+        try {
+            service.updatePerson(index, name, email, edad);
             loadFromFile();
             lblMsg.setText("persona actualizada con exito");
             lblMsg.setStyle("-fx-text-fill: green");
@@ -83,14 +94,33 @@ public class AppController {
             txtEmail.clear();
             txtEdad.clear();
 
-        }catch (IOException e){
+        } catch (IOException e) {
             lblMsg.setText("Hubo un error con el archivo");
             lblMsg.setStyle("-fx-text-fill: red");
-        }catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             lblMsg.setText("Hubo un error con los datos");
             lblMsg.setStyle("-fx-text-fill: red");
         }
     }
+
+    @FXML
+    public void onDelete() {
+        int index = listView.getSelectionModel().getSelectedIndex();
+        try {
+            service.deletePerson(index);
+            loadFromFile();
+            lblMsg.setText("Persona eliminada correctamente");
+            lblMsg.setStyle("-fx-text-fill: green");
+            txtName.clear();
+            txtEmail.clear();
+            txtEdad.clear();
+
+        } catch (IOException e) {
+            lblMsg.setText("Hubo un error con el archivo");
+            lblMsg.setStyle("-fx-text-fill: red");
+        }
+    }
+
 
     private void loadFromFile(){
         try{
@@ -114,5 +144,27 @@ public class AppController {
 
 
     }
-
+    private void filtroEmail(String valorBusqueda) {
+        try {
+            List<String> items = service.loadDataforList();
+            data.clear();
+            for (String linea : items) {
+                if (linea.trim().isEmpty()) continue;
+                String[] parts = linea.split("-");
+                if (parts.length > 1) {
+                    String emailArchivo = parts[1];
+                    if (emailArchivo.toLowerCase().contains(valorBusqueda.toLowerCase())) {
+                        data.add(linea);
+                    }
+                }
+            }
+            if (valorBusqueda.isEmpty()) {
+                data.setAll(items);
+            }
+        } catch (IOException e) {
+            lblMsg.setText("Error al filtrar datos");
+            lblMsg.setStyle("-fx-text-fill: red");
+        }
+    }
 }
+

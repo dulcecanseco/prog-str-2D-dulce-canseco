@@ -31,9 +31,11 @@
             <Button mnemonicParsing="false" text="Recargar" />
             <Button mnemonicParsing="false" onAction="#onAddPerson" text="Agregar" />
             <Button mnemonicParsing="false" onAction="#onUpdate" text="Actualizar" />
+            <Button mnemonicParsing="false" onAction="#onDelete" text="Eliminar" />
+            <TextField fx:id="txtBusqueda" promptText="txtBusqueda"/>
          </children>
       </HBox>
       <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" />
-      <Label fx:id="lblMsg" text=" " />
+       <Label fx:id="lblMsg" text="..." />
    </children>
 </VBox>
